@@ -36,6 +36,9 @@ class Parsing:
             for i in range(9):
                 time.sleep(3)
                 cards = self.driver.find_elements_by_css_selector('a.Link')
+                if cards is None:
+                    self.check_captcha()
+                    cards = self.driver.find_elements_by_css_selector('a.Link')
                 links = []
                 for card in cards:
                     try:
@@ -48,9 +51,11 @@ class Parsing:
                     self.driver.execute_script("window.open('{}')".format(link))
                     tabs = self.driver.window_handles
                     self.driver.switch_to.window(tabs[1])
-                    name = WebDriverWait(self.driver, 10).until(
-                        EC.element_to_be_clickable((By.XPATH,
-                                                    '//*[@id="app"]/div/div[1]/div/div/div/div/div[1]/div/div[1]/div/div[1]/div[1]/div[2]/b'))).text
+                    try:
+                        name = WebDriverWait(self.driver, 15).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="app"]/div/div[1]/div/div/div/div/div[1]/div/div[1]/div/div[1]/div[1]/div[2]/b'))).text
+                    except:
+                        self.check_captcha()
+                        name = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="app"]/div/div[1]/div/div/div/div/div[1]/div/div[1]/div/div[1]/div[1]/div[2]/b'))).text
                     res = self.is_in_base(name)
                     if res == 'y':
                         self.driver.close()
@@ -85,9 +90,14 @@ class Parsing:
                         if res2 != 'bad':
                             tabs = self.driver.window_handles
                             self.driver.switch_to.window(tabs[2])
-                            tel = WebDriverWait(self.driver, 10).until(
-                                EC.element_to_be_clickable((By.XPATH, '//*[@id="main_block"]/div[1]/h1/p/span'))).text
-                            print(tel)
+                            try:
+                                tel = WebDriverWait(self.driver, 15).until(
+                                    EC.element_to_be_clickable((By.XPATH, '//*[@id="main_block"]/div[1]/h1/p/span'))).text
+                                print(tel)
+                            except:
+                                self.check_captcha()
+                                tel = WebDriverWait(self.driver, 10).until(
+                                    EC.element_to_be_clickable((By.XPATH, '//*[@id="main_block"]/div[1]/h1/p/span'))).text
                             self.inf.append(tel)
                             self.driver.close()
                             self.driver.switch_to.window(tabs[1])
@@ -104,6 +114,14 @@ class Parsing:
                             continue
                     self.w_to_cvs()
                 self.find_elems_by_tag_name(['span'], ['Далее'], 1, 'click')
+
+    def check_captcha(self):
+        try:
+            WebDriverWait(self.driver, 15).until(EC.element_to_be_clickable((By.NAME, 'rep')))
+            print('Обнаружена капча!')
+            time.sleep(30)
+        except:
+            pass
 
     def take_tel(self, tabs):
         res_tel = self.find_elems_by_tag_name(['button'], ['Телефон'], 1, 'click')
@@ -172,7 +190,7 @@ class Parsing:
 def main():
     url = input('Введите ссылку:')
     connect = sqlite3.connect('names_yausl.db')
-    driver = webdriver.Chrome(executable_path='сюда путь до chromedriver')
+    driver = webdriver.Chrome(executable_path='путь до драйвера')
     parse = Parsing(driver, connect, url)
 
 
