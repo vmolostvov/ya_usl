@@ -21,16 +21,20 @@ class Parsing:
         self.driver.get(self.url)
         time.sleep(15)
         kat = self.driver.find_element_by_xpath('//*[@id="app"]/div/div[1]/div/div/div/div/div[2]/div[2]/div/div[3]/div[1]/div/div')
-        time.sleep(3)
+        time.sleep(2)
+        elms = kat.find_elements_by_tag_name('a')
+        elms[-1].click()
+        kat = self.driver.find_element_by_xpath('//*[@id="app"]/div/div[1]/div/div/div/div/div[2]/div[2]/div/div[3]/div[1]/div/div')
+        time.sleep(2)
         elms = kat.find_elements_by_tag_name('a')
         print(len(elms))
         return elms
 
     def test2(self):
         categories = self.test1()
-        for cat in categories[1:]:
+        for cat in categories[0:]:
             print(cat.get_attribute('href'))
-            self.driver.get(cat.get_attribute('href') + '&wizextra=ydofilters%3Dfeature%3As_features%3Aor%3Aworker_type_private')
+            self.driver.get(cat.get_attribute('href') + '?msp=no&p=0&text=&wizextra=ydofilters%3Dfeature%3As_features%3Aor%3Aworker_type_private')
             offer = WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable((By.XPATH, '//*[@id="app"]/div/div[1]/div/div/div/div/div[1]/div/h1'))).text
             for i in range(9):
@@ -190,7 +194,7 @@ class Parsing:
 def main():
     url = input('Введите ссылку:')
     connect = sqlite3.connect('names_yausl.db')
-    driver = webdriver.Chrome(executable_path='путь до драйвер')
+    driver = webdriver.Chrome(executable_path='C:/Users/1/PycharmProjects/pythonProject/chromedriver_win32/chromedriver.exe')
     parse = Parsing(driver, connect, url)
 
 
