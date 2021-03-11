@@ -190,7 +190,7 @@ class Parsing:
 def main():
     url = input('Введите ссылку:')
     connect = sqlite3.connect('names_yausl.db')
-    driver = webdriver.Chrome(executable_path='путь до драйвера')
+    driver = webdriver.Chrome(executable_path='путь до драйвер')
     parse = Parsing(driver, connect, url)
 
 
