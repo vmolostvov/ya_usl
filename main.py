@@ -19,7 +19,7 @@ class Parsing:
 
     def test1(self):
         self.driver.get(self.url)
-        time.sleep(15)
+        time.sleep(15)  # время ожидания при появлении капчи на старте
         kat = self.driver.find_element_by_xpath('//*[@id="app"]/div/div[1]/div/div/div/div/div[2]/div[2]/div/div[3]/div[1]/div/div')
         time.sleep(2)
         elms = kat.find_elements_by_tag_name('a')
@@ -32,7 +32,7 @@ class Parsing:
 
     def test2(self):
         categories = self.test1()
-        for cat in categories[0:]:
+        for cat in categories[0:]:  # здесь 0 означает первую категорию, например, если поставить 5 парсинг начнется с 6-ой категории
             print(cat.get_attribute('href'))
             self.driver.get(cat.get_attribute('href') + '?msp=no&p=0&text=&wizextra=ydofilters%3Dfeature%3As_features%3Aor%3Aworker_type_private')
             offer = WebDriverWait(self.driver, 10).until(
@@ -123,7 +123,7 @@ class Parsing:
         try:
             WebDriverWait(self.driver, 15).until(EC.element_to_be_clickable((By.NAME, 'rep')))
             print('Обнаружена капча!')
-            time.sleep(30)
+            time.sleep(30)  # время ожидания при появлении капчи в процессе парсинга
         except:
             pass
 
@@ -159,7 +159,7 @@ class Parsing:
         return 'no'
 
     def w_to_cvs(self):
-        with open('it.csv', "a", newline="") as file:
+        with open('it.csv', "a", newline="") as file:  # тут можно поменять название csv файла
             writer = csv.writer(file, delimiter=';')
             writer.writerows([self.inf])
 
