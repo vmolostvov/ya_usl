@@ -20,11 +20,20 @@ class Parsing:
     def test1(self):
         self.driver.get(self.url)
         time.sleep(15)  # время ожидания при появлении капчи на старте
-        kat = self.driver.find_element_by_xpath('//*[@id="app"]/div/div[1]/div/div/div/div/div[2]/div[2]/div/div[3]/div[1]/div/div')
+        try:
+            kat = self.driver.find_element_by_xpath('//*[@id="app"]/div/div[1]/div/div/div/div/div[2]/div[2]/div/div[2]/div[1]/div/div')
+        except:
+            kat = self.driver.find_element_by_xpath(
+                '//*[@id="app"]/div/div[1]/div/div/div/div/div[2]/div[2]/div/div[3]/div[1]/div/div')
         time.sleep(2)
         elms = kat.find_elements_by_tag_name('a')
         elms[-1].click()
-        kat = self.driver.find_element_by_xpath('//*[@id="app"]/div/div[1]/div/div/div/div/div[2]/div[2]/div/div[3]/div[1]/div/div')
+        try:
+            kat = self.driver.find_element_by_xpath(
+                '//*[@id="app"]/div/div[1]/div/div/div/div/div[2]/div[2]/div/div[2]/div[1]/div/div')
+        except:
+            kat = self.driver.find_element_by_xpath(
+                '//*[@id="app"]/div/div[1]/div/div/div/div/div[2]/div[2]/div/div[3]/div[1]/div/div')
         time.sleep(2)
         elms = kat.find_elements_by_tag_name('a')
         print(len(elms))
@@ -32,9 +41,12 @@ class Parsing:
 
     def test2(self):
         categories = self.test1()
-        for cat in categories[0:]:  # здесь 0 означает первую категорию, например, если поставить 5 парсинг начнется с 6-ой категории
-            print(cat.get_attribute('href'))
-            self.driver.get(cat.get_attribute('href') + '?msp=no&p=0&text=&wizextra=ydofilters%3Dfeature%3As_features%3Aor%3Aworker_type_private')
+        list_of_href = []
+        for cat in categories:
+            list_of_href.append(cat.get_attribute('href'))
+        for href in list_of_href[0:]:  # здесь 0 означает первую категорию, например, если поставить 5 парсинг начнется с 6-ой категории
+            print(href)
+            self.driver.get(href + '?msp=no&p=0&text=&wizextra=ydofilters%3Dfeature%3As_features%3Aor%3Aworker_type_private')
             offer = WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable((By.XPATH, '//*[@id="app"]/div/div[1]/div/div/div/div/div[1]/div/h1'))).text
             for i in range(9):
@@ -113,6 +125,8 @@ class Parsing:
                                 continue
 
                     else:
+                        mail = 'Отсутствует'
+                        self.inf.append(mail)
                         tel = self.take_tel(tabs)
                         if tel == 'bad':
                             continue
